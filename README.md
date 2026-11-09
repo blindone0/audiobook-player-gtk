@@ -66,3 +66,7 @@ The window's class is `grad-obrechennyj-audiobook`, so the panel groups it under
 1. Write `player/book.js` with your files (`"file"`, exact `"dur"` in seconds) and chapters (`"track"`, `"time"`, `"part"`, `"title"`). To get exact durations, decode each file rather than trusting the duration in its header.
 2. Run `tools/scan_pauses.py audio player/phrases.json`.
 3. Optionally, change `WMCLASS` and `APP_ID` at the top of `gradplayer.py`, and rename the `.desktop.in` to match.
+
+## License
+
+The code is under the [MIT License](LICENSE). The novel «Град обреченный» and its audio recording belong to their rights holders and are not part of this repository.
