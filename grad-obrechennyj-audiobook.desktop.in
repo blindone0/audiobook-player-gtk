@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Град обреченный
+GenericName=Audiobook
+Comment=Аудиокнига — А. и Б. Стругацкие
+Exec=/usr/bin/python3 "@DIR@/player/gradplayer.py"
+Path=@DIR@
+Icon=@DIR@/player/icon.png
+StartupWMClass=grad-obrechennyj-audiobook
+Terminal=false
+StartupNotify=true
+Categories=AudioVideo;Audio;Player;
+Keywords=audiobook;Strugatsky;Стругацкие;аудиокнига;

@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Град обреченный</title>
+<link rel="icon" href="cover.jpg">
+<style>
+:root{
+  --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b18; --muted:#6f6a60; --line:#e3ddd0;
+  --accent:#b4441c; --accent-ink:#fff; --track:#e6e0d3; --fill:#b4441c; --hover:#f0ebe0; --done:#cfc6b4;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15140f; --panel:#1e1d18; --ink:#ece7dc; --muted:#9b958a; --line:#2e2c25;
+    --accent:#e0713f; --accent-ink:#1a0d06; --track:#33302a; --fill:#e0713f; --hover:#27251f; --done:#4a463d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15140f; --panel:#1e1d18; --ink:#ece7dc; --muted:#9b958a; --line:#2e2c25;
+  --accent:#e0713f; --accent-ink:#1a0d06; --track:#33302a; --fill:#e0713f; --hover:#27251f; --done:#4a463d;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:10px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+.top{display:flex;gap:18px;align-items:flex-start}
+.cover{width:112px;height:160px;border-radius:8px;object-fit:cover;box-shadow:0 6px 24px rgba(0,0,0,.25);flex:none}
+.meta h1{font-size:26px;line-height:1.15;margin:2px 0 6px;font-weight:700;letter-spacing:-.01em}
+.meta .by{color:var(--muted);margin:0}
+.meta .now{margin-top:14px}
+.now .part{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.now .chap{font-size:19px;font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:18px}
+.scrub{width:100%;margin:6px 0 2px;accent-color:var(--fill);height:22px}
+.times{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+.bookbar{position:relative;height:10px;background:var(--track);border-radius:6px;margin:16px 0 6px;cursor:pointer;overflow:hidden}
+.bookbar .fill{position:absolute;inset:0 auto 0 0;background:var(--fill);opacity:.85}
+.bookbar .tick{position:absolute;top:0;bottom:0;width:2px;background:var(--panel);opacity:.9}
+.booktimes{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;gap:10px;flex-wrap:wrap}
+.controls{display:flex;justify-content:center;align-items:center;gap:10px;margin:14px 0 4px}
+.cbtn{width:52px;height:52px;display:grid;place-items:center;font-size:13px;font-weight:600;position:relative}
+.cbtn:hover{background:var(--hover)}
+.cbtn svg{width:26px;height:26px;fill:currentColor}
+.cbtn .n{position:absolute;bottom:6px;font-size:10.5px;font-weight:700}
+.play{width:72px;height:72px;border-radius:50%;background:var(--accent);color:var(--accent-ink)}
+.play:hover{background:var(--accent);filter:brightness(1.08)}
+.play svg{width:34px;height:34px}
+.row2{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.pill{border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-size:13.5px;display:inline-flex;gap:6px;align-items:center;background:var(--panel)}
+.pill:hover{background:var(--hover)}
+.pill.on{border-color:var(--accent);color:var(--accent)}
+select.pill{appearance:none;-webkit-appearance:none;color:var(--ink);cursor:pointer}
+select.pill option{background:var(--panel);color:var(--ink)}
+.vol{display:inline-flex;align-items:center;gap:6px}
+.vol input{width:90px;accent-color:var(--fill)}
+.status{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);margin-top:12px;flex-wrap:wrap}
+.status .ok{color:#3c8d4f}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:-4px -4px 8px;padding:0 4px}
+.tab{padding:8px 12px;border-radius:8px 8px 0 0;color:var(--muted);font-weight:600;font-size:14px}
+.tab.on{color:var(--ink);box-shadow:inset 0 -2px 0 var(--accent)}
+.list{max-height:56vh;overflow:auto;margin:0 -8px}
+.ph{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:12px 12px 4px}
+.item{display:grid;grid-template-columns:1fr auto;gap:2px 12px;width:100%;text-align:left;padding:9px 12px;border-radius:10px;position:relative}
+.item:hover{background:var(--hover)}
+.item .t{font-weight:500}
+.item .s{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.item .sub{font-size:12.5px;color:var(--muted);grid-column:1/-1}
+.item.cur{background:var(--hover)}
+.item.cur .t{color:var(--accent);font-weight:700}
+.item.done .t{color:var(--muted)}
+.item .pbar{grid-column:1/-1;height:3px;background:var(--track);border-radius:2px;overflow:hidden;margin-top:4px}
+.item .pbar i{display:block;height:100%;background:var(--fill)}
+.bm{display:flex;gap:8px;align-items:center}
+.bm .item{flex:1}
+.x{color:var(--muted);padding:6px 10px}
+.x:hover{color:var(--accent)}
+.empty{color:var(--muted);padding:14px 12px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font-size:14px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;pointer-events:auto}
+.toast button{color:var(--accent);font-weight:700;padding:2px 6px;filter:brightness(1.3)}
+.keys{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.8}
+kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;font:12px ui-monospace,monospace;background:var(--panel)}
+@media (max-width:560px){
+  .top{gap:12px}.cover{width:78px;height:112px}.meta h1{font-size:21px}.now .chap{font-size:17px}
+  .cbtn{width:46px;height:46px}.play{width:64px;height:64px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <img class="cover" id="cover" alt="">
+    <div class="meta">
+      <h1 id="title"></h1>
+      <p class="by" id="by"></p>
+      <div class="now"><div class="part" id="nowPart"></div><div class="chap" id="nowChap">—</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <input type="range" class="scrub" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position in chapter">
+    <div class="times"><span id="tElapsed">0:00</span><span id="tLeft">-0:00</span></div>
+
+    <div class="controls">
+      <button class="cbtn" id="bPrev" title="Previous chapter (Shift+←)"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+      <button class="cbtn" id="bBack" title="Back 15 s (←)"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg><span class="n">15</span></button>
+      <button class="cbtn play" id="bPlay" title="Play / pause (Space)"><svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="cbtn" id="bFwd" title="Forward 30 s (→)"><svg viewBox="0 0 24 24"><path d="M12 5V2l5 4-5 4V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z"/></svg><span class="n">30</span></button>
+      <button class="cbtn" id="bNext" title="Next chapter (Shift+→)"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+    </div>
+
+    <div class="row2">
+      <select class="pill" id="speed" title="Speed ( [ and ] )"></select>
+      <select class="pill" id="sleep" title="Sleep timer">
+        <option value="0">Sleep: off</option>
+        <option value="5">Sleep: 5 min</option><option value="10">Sleep: 10 min</option>
+        <option value="15">Sleep: 15 min</option><option value="30">Sleep: 30 min</option>
+        <option value="45">Sleep: 45 min</option><option value="60">Sleep: 60 min</option>
+        <option value="90">Sleep: 90 min</option><option value="ch">Sleep: end of chapter</option>
+      </select>
+      <button class="pill" id="bMark" title="Add bookmark (B)">＋ Bookmark</button>
+      <span class="pill vol"><button id="bMute" title="Mute (M)">🔈</button><input type="range" id="vol" min="0" max="1" step="0.01" value="1" aria-label="Volume"></span>
+      <button class="pill" id="bTheme" title="Theme">◐</button>
+    </div>
+
+    <div class="bookbar" id="bookbar" title="Whole book — click to jump"><div class="fill" id="bookfill"></div></div>
+    <div class="booktimes"><span id="bkPos"></span><span id="bkPct"></span><span id="bkLeft"></span></div>
+
+    <div class="status"><span id="saveStatus">Not saved yet</span><span id="sleepStatus"></span><span id="trackStatus"></span></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab on" data-tab="chapters">Chapters</button>
+      <button class="tab" data-tab="marks">Bookmarks &amp; history</button>
+      <button class="tab" data-tab="files">Files</button>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div class="keys">
+    <kbd>Space</kbd> play/pause · <kbd>←</kbd>/<kbd>→</kbd> −15 s/+30 s · <kbd>Shift</kbd>+<kbd>←</kbd>/<kbd>→</kbd> chapter ·
+    <kbd>↑</kbd>/<kbd>↓</kbd> volume · <kbd>[</kbd>/<kbd>]</kbd> speed · <kbd>B</kbd> bookmark · <kbd>M</kbd> mute · media keys work too.
+    Position is saved every few seconds while playing, and on pause, seek and close.
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toastText"></span><button id="toastBtn"></button></div>
+<audio id="audio" preload="auto"></audio>
+
+<script src="book.js"></script>
+<script>
+"use strict";
+const B = window.BOOK;
+const $ = id => document.getElementById(id);
+const audio = $('audio');
+const BASE = '../';                       // tracks live in ../audio/
+const SERVER = location.protocol.startsWith('http');
+const LS_KEY = 'audiobook:' + B.title + ':state';
+const SPEEDS = [0.5,0.6,0.7,0.75,0.8,0.85,0.9,0.95,1,1.05,1.1,1.15,1.2,1.25,1.3,1.4,1.5,1.6,1.75,1.85,2,2.25,2.5,3];
+
+// ---------- book geometry ----------
+const starts = []; let total = 0;
+for (const t of B.tracks) { starts.push(total); total += t.dur; }
+const chapters = B.chapters.map(c => ({...c, g: starts[c.track - 1] + c.time}));
+chapters.forEach((c, i) => c.end = i + 1 < chapters.length ? chapters[i + 1].g : total);
+
+// ---------- state ----------
+let st = {track: 1, time: 0, speed: 1, volume: 1, bookmarks: [], history: [], updated: 0, listenedSeconds: 0};
+let curTrack = 0;              // loaded track (1-based), 0 = none
+let pendingSeek = null;        // seconds to apply after metadata loads
+let wantPlay = false;
+let lastSave = 0, lastSaveOk = null, dirty = false;
+let pausedAt = 0;
+let sleep = {mode: '0', until: 0, chapterEnd: null};
+let scrubbing = false;
+let serverOk = false;           // only write to progress.json after it was read successfully
+let changed = false;            // this tab changed position/settings since its last save
+
+const fmt = s => {
+  s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0');
+};
+// volume slider/keys work on a perceptual scale (like system mixers): loudness = position³
+const LOUD = p => p * p * p, POS = v => Math.cbrt(Math.max(0, v));
+const fmtLong = s => { s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? `${h} h ${m} min` : `${m} min`; };
+const globalPos = () => curTrack ? starts[curTrack - 1] + (pendingSeek ?? audio.currentTime ?? 0) : starts[st.track - 1] + st.time;
+const chapterAt = g => { let k = 0; for (let i = 0; i < chapters.length; i++) if (chapters[i].g <= g + 0.05) k = i; return k; };
+const trackAt = g => { let k = 0; for (let i = 0; i < starts.length; i++) if (starts[i] <= g) k = i; return k + 1; };
+const posLabel = g => { const c = chapters[chapterAt(g)]; return `${c.part ? c.part + ' — ' : ''}${c.title}, ${fmt(g - c.g)}`; };
+
+// ---------- persistence ----------
+function snapshot() {
+  const g = globalPos();
+  st.track = trackAt(g); st.time = +(g - starts[st.track - 1]).toFixed(2);
+  st.speed = audio.playbackRate || st.speed; st.volume = fadeBase ?? audio.volume;
+  st.updated = Date.now();
+  return JSON.stringify(st);
+}
+// Saves carry the revision they are based on. Passive saves (tab hidden / closed) are skipped when this
+// tab changed nothing, and are refused by the server if another tab saved newer progress meanwhile.
+// Saves caused by playing or by your own actions here are forced.
+let saving = false, saveAgain = false;
+function save(reason) {
+  const passive = (reason === 'hidden' || reason === 'unload') && audio.paused;
+  if (passive && !changed) return;
+  const body = snapshot();
+  try { localStorage.setItem(LS_KEY, body); } catch (e) {}
+  lastSave = Date.now(); dirty = false;
+  if (!SERVER || !serverOk) { lastSaveOk = 'browser'; renderSave(); return; }
+  const payload = JSON.parse(body); delete payload.rev;
+  payload.baseRev = st.rev ?? null; payload.force = !passive;
+  if (reason === 'unload') {
+    const b = JSON.stringify(payload);
+    if (navigator.sendBeacon) navigator.sendBeacon('/api/state', new Blob([b], {type: 'text/plain'}));
+    else fetch('/api/state', {method: 'POST', body: b, keepalive: true});
+    return;
+  }
+  if (saving) { saveAgain = true; return; }
+  saving = true; changed = false;
+  fetch('/api/state', {method: 'POST', body: JSON.stringify(payload), keepalive: true, headers: {'Content-Type': 'application/json'}})
+    .then(async r => {
+      if (r.status === 409) { applyRemote(await r.json()); lastSaveOk = 'disk'; }
+      else if (r.ok) { st.rev = (await r.json()).rev; lastSaveOk = 'disk'; }
+      else lastSaveOk = 'browser';
+    })
+    .catch(() => { lastSaveOk = 'browser'; })
+    .finally(() => { saving = false; renderSave(); if (saveAgain) { saveAgain = false; save('again'); } });
+}
+// another tab/browser saved newer progress: take it over (only while paused here)
+function applyRemote(s) {
+  if (!s || !s.track || !audio.paused) return;
+  const before = globalPos();
+  st = Object.assign(st, s); st.bookmarks = st.bookmarks || []; st.history = st.history || [];
+  if (st.speed !== audio.playbackRate) { audio.playbackRate = st.speed; audio.defaultPlaybackRate = st.speed; }
+  $('speed').value = st.speed;
+  audio.volume = st.volume ?? 1; $('vol').value = POS(audio.volume);
+  loadTrack(st.track, st.time, false);
+  changed = false; renderList(); updateUI();
+  const g = starts[st.track - 1] + st.time;
+  if (Math.abs(g - before) > 2) toast('Synced to the latest saved position: ' + posLabel(g));
+}
+async function syncFromServer() {
+  if (!SERVER || !serverOk || !audio.paused || saving) return;
+  try {
+    const r = await fetch('/api/state', {cache: 'no-store'}); if (!r.ok) return;
+    const s = await r.json(); if (s.rev && s.rev !== st.rev) applyRemote(s);
+  } catch (e) {}
+}
+function renderSave() {
+  const ago = Math.round((Date.now() - lastSave) / 1000);
+  const where = lastSaveOk === 'disk' ? 'saved to progress.json' : 'saved in browser only';
+  $('saveStatus').innerHTML = lastSave ? `<span class="ok">✓</span> Position ${where} · ${ago < 2 ? 'just now' : ago + ' s ago'}` : 'Not saved yet';
+}
+async function loadState() {
+  let a = null, b = null;
+  try { b = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) {}
+  if (SERVER) { try { const r = await fetch('/api/state', {cache: 'no-store'}); if (r.ok) { a = await r.json(); serverOk = true; } } catch (e) {} }
+  const best = [a, b].filter(x => x && x.track).sort((x, y) => (y.updated || 0) - (x.updated || 0))[0];
+  if (best) st = Object.assign(st, best);
+  st.rev = a ? a.rev : undefined;
+  st.bookmarks = st.bookmarks || []; st.history = st.history || [];
+  if (st.track < 1 || st.track > B.tracks.length) { st.track = 1; st.time = 0; }
+}
+
+// ---------- playback ----------
+function loadTrack(n, t, play) {
+  wantPlay = play;
+  if (n !== curTrack) {
+    curTrack = n; pendingSeek = t;
+    audio.src = BASE + B.tracks[n - 1].file;
+    audio.load();
+  } else {
+    audio.currentTime = t;
+    if (play) audio.play().catch(() => {});
+  }
+  updateUI();
+}
+audio.addEventListener('loadedmetadata', () => {
+  audio.playbackRate = st.speed;
+  if (pendingSeek != null) { audio.currentTime = Math.min(pendingSeek, Math.max(0, audio.duration - 0.5)); pendingSeek = null; }
+  if (wantPlay) audio.play().catch(() => {});
+});
+function seekGlobal(g, play = !audio.paused, remember = false) {
+  g = Math.max(0, Math.min(total - 0.5, g));
+  if (remember) pushHistory();
+  const n = trackAt(g);
+  loadTrack(n, g - starts[n - 1], play);
+  if (play === false) { st.track = n; st.time = g - starts[n - 1]; }
+  dirty = true; changed = true; setTimeout(() => save('seek'), 300);
+}
+const skip = d => seekGlobal(globalPos() + d);
+function togglePlay() {
+  if (!curTrack) { loadTrack(st.track, st.time, true); return; }
+  if (audio.paused) {
+    // smart rewind: step back a little after a longer pause
+    const idle = pausedAt ? (Date.now() - pausedAt) / 1000 : 0;
+    if (idle > 60) audio.currentTime = Math.max(0, audio.currentTime - Math.min(10, 3 + idle / 120));
+    audio.play().catch(() => {});
+  } else audio.pause();
+}
+function chapterJump(d) {
+  const g = globalPos(), k = chapterAt(g);
+  let target;
+  if (d < 0) target = (g - chapters[k].g > 4 || k === 0) ? chapters[k].g : chapters[k - 1].g;
+  else target = k + 1 < chapters.length ? chapters[k + 1].g : null;
+  if (target != null) seekGlobal(target, !audio.paused || wantPlay, true);
+}
+audio.addEventListener('ended', () => {
+  if (curTrack < B.tracks.length) loadTrack(curTrack + 1, 0, true);
+  else { save('end'); toast('The end of the book.'); }
+});
+audio.addEventListener('play', () => { pausedAt = 0; updatePlayIcon(); save('play'); });
+audio.addEventListener('pause', () => { pausedAt = Date.now(); updatePlayIcon(); if (!audio.ended) save('pause'); });
+audio.addEventListener('ratechange', () => { dirty = true; changed = true; save('rate'); });
+audio.addEventListener('error', () => {
+  const e = audio.error; toast(`Cannot play ${B.tracks[curTrack - 1]?.file} (${e && e.code})`);
+});
+let lastTick = 0;
+audio.addEventListener('timeupdate', () => {
+  const now = Date.now();
+  if (!audio.paused && lastTick) st.listenedSeconds = (st.listenedSeconds || 0) + Math.min(2, (now - lastTick) / 1000);
+  lastTick = audio.paused ? 0 : now;
+  if (!audio.paused) changed = true;
+  if (!audio.paused && now - lastSave > 5000) save('tick');
+  checkSleep();
+  if (!scrubbing) updateUI();
+});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save('hidden'); else syncFromServer(); });
+window.addEventListener('focus', () => syncFromServer());
+window.addEventListener('pagehide', () => save('unload'));
+window.addEventListener('beforeunload', () => save('unload'));
+
+// ---------- history & bookmarks ----------
+function pushHistory() {
+  const g = globalPos();
+  st.history = [{g, at: Date.now()}, ...(st.history || []).filter(h => Math.abs(h.g - g) > 30)].slice(0, 15);
+  toast(`Jumped from ${posLabel(g)}`, 'Go back', () => seekGlobal(g, !audio.paused, true));
+}
+function addBookmark() {
+  const g = globalPos();
+  const note = prompt('Bookmark note (optional):', '') ;
+  if (note === null) return;
+  st.bookmarks.push({id: Date.now(), g, note: note.trim(), at: Date.now()}); changed = true;
+  st.bookmarks.sort((a, b) => a.g - b.g); save('bookmark'); renderList(); toast('Bookmark added at ' + fmt(g));
+}
+
+// ---------- sleep timer ----------
+let fadeBase = null;
+function setSleep(v) {
+  sleep.mode = v; fadeBase = null;
+  if (v === '0') sleep.until = 0;
+  else if (v === 'ch') { sleep.chapterEnd = chapters[chapterAt(globalPos())].end; sleep.until = 0; }
+  else sleep.until = Date.now() + (+v) * 60000;
+  checkSleep();
+}
+function checkSleep() {
+  let left = null;
+  if (sleep.mode === 'ch') left = (sleep.chapterEnd - globalPos()) / (audio.playbackRate || 1);
+  else if (sleep.until) left = (sleep.until - Date.now()) / 1000;
+  if (left == null) { $('sleepStatus').textContent = ''; if (fadeBase != null) { audio.volume = fadeBase; fadeBase = null; } return; }
+  $('sleepStatus').textContent = '☾ Sleep in ' + fmt(left);
+  if (left < 10 && !audio.paused) { if (fadeBase == null) fadeBase = audio.volume; audio.volume = Math.max(0, fadeBase * left / 10); }
+  if (left <= 0) {
+    audio.pause(); if (fadeBase != null) audio.volume = fadeBase; fadeBase = null;
+    sleep = {mode: '0', until: 0}; $('sleep').value = '0'; $('sleepStatus').textContent = '';
+    toast('Sleep timer: paused. Position saved.');
+  }
+}
+
+// ---------- UI ----------
+function updatePlayIcon() {
+  $('playIcon').innerHTML = audio.paused ? '<path d="M8 5v14l11-7z"/>' : '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+}
+let lastChapterShown = -1;
+function updateUI() {
+  const g = globalPos(), k = chapterAt(g), c = chapters[k];
+  const cl = c.end - c.g, ce = g - c.g, rate = audio.playbackRate || st.speed || 1;
+  $('nowPart').textContent = c.part || B.title;
+  $('nowChap').textContent = c.title;
+  if (!scrubbing) $('scrub').value = Math.round(ce / cl * 1000);
+  $('tElapsed').textContent = fmt(ce);
+  $('tLeft').textContent = '-' + fmt((cl - ce) / rate);
+  $('bookfill').style.width = (g / total * 100) + '%';
+  $('bkPos').textContent = `${fmt(g)} / ${fmt(total)}`;
+  $('bkPct').textContent = (g / total * 100).toFixed(1) + '%';
+  $('bkLeft').textContent = `${fmtLong((total - g) / rate)} left` + (rate !== 1 ? ` at ${rate}×` : '');
+  const tr = trackAt(g);
+  $('trackStatus').textContent = `File ${tr}/${B.tracks.length} · ${fmt(g - starts[tr - 1])}`;
+  document.title = `${audio.paused ? '' : '▶ '}${c.title} — ${B.title}`;
+  if (k !== lastChapterShown) { lastChapterShown = k; setMediaMeta(c); if (curTab === 'chapters') renderList(); }
+  else if (curTab === 'chapters') updateChapterBars(g);
+  if ('mediaSession' in navigator && navigator.mediaSession.setPositionState && cl > 0) {
+    try { navigator.mediaSession.setPositionState({duration: cl, position: Math.min(cl, Math.max(0, ce)), playbackRate: rate}); } catch (e) {}
+  }
+}
+function setMediaMeta(c) {
+  if (!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: c.title + (c.part ? ' · ' + c.part : ''), artist: B.authors, album: B.title,
+    artwork: [{src: new URL(B.cover, location.href).href, sizes: '170x243', type: 'image/jpeg'}]
+  });
+}
+if ('mediaSession' in navigator) {
+  const ms = navigator.mediaSession, h = (a, f) => { try { ms.setActionHandler(a, f); } catch (e) {} };
+  h('play', () => togglePlay()); h('pause', () => audio.pause());
+  h('seekbackward', () => skip(-15)); h('seekforward', () => skip(30));
+  h('previoustrack', () => chapterJump(-1)); h('nexttrack', () => chapterJump(1));
+  h('seekto', d => seekGlobal(chapters[chapterAt(globalPos())].g + d.seekTime));
+}
+
+let curTab = 'chapters';
+function renderList() {
+  const L = $('list'), g = globalPos(); L.innerHTML = '';
+  if (curTab === 'chapters') {
+    const k = chapterAt(g); let part = null;
+    chapters.forEach((c, i) => {
+      if (c.part !== part) { part = c.part; if (part) { const h = document.createElement('div'); h.className = 'ph'; h.textContent = part; L.appendChild(h); } }
+      const b = document.createElement('button');
+      b.className = 'item' + (i === k ? ' cur' : '') + (i < k ? ' done' : '');
+      b.dataset.i = i;
+      b.innerHTML = `<span class="t"></span><span class="s">${fmt(c.end - c.g)}</span><span class="sub">starts ${fmt(c.g)} · file ${c.track}</span><span class="pbar"><i></i></span>`;
+      b.querySelector('.t').textContent = c.title;
+      b.onclick = () => seekGlobal(c.g, true, true);
+      L.appendChild(b);
+    });
+    updateChapterBars(g);
+    scrollToCur(L);
+  } else if (curTab === 'marks') {
+    const h = document.createElement('div'); h.className = 'ph'; h.textContent = 'Bookmarks'; L.appendChild(h);
+    if (!st.bookmarks.length) L.insertAdjacentHTML('beforeend', '<div class="empty">No bookmarks yet — press B or “＋ Bookmark”.</div>');
+    st.bookmarks.forEach(m => {
+      const row = document.createElement('div'); row.className = 'bm';
+      const b = document.createElement('button'); b.className = 'item';
+      b.innerHTML = '<span class="t"></span><span class="s"></span><span class="sub"></span>';
+      b.querySelector('.t').textContent = m.note || posLabel(m.g);
+      b.querySelector('.s').textContent = fmt(m.g);
+      b.querySelector('.sub').textContent = (m.note ? posLabel(m.g) + ' · ' : '') + new Date(m.at).toLocaleString();
+      b.onclick = () => seekGlobal(m.g, true, true);
+      const x = document.createElement('button'); x.className = 'x'; x.textContent = '✕'; x.title = 'Delete bookmark';
+      x.onclick = () => { if (confirm('Delete this bookmark?')) { st.bookmarks = st.bookmarks.filter(y => y.id !== m.id); changed = true; save('bm'); renderList(); } };
+      row.append(b, x); L.appendChild(row);
+    });
+    const h2 = document.createElement('div'); h2.className = 'ph'; h2.textContent = 'Recent positions (before jumps)'; L.appendChild(h2);
+    if (!st.history.length) L.insertAdjacentHTML('beforeend', '<div class="empty">Nothing yet. Whenever you jump to another chapter or bookmark, the place you left is kept here.</div>');
+    st.history.forEach(m => {
+      const b = document.createElement('button'); b.className = 'item';
+      b.innerHTML = '<span class="t"></span><span class="s"></span><span class="sub"></span>';
+      b.querySelector('.t').textContent = posLabel(m.g); b.querySelector('.s').textContent = fmt(m.g);
+      b.querySelector('.sub').textContent = 'left ' + new Date(m.at).toLocaleString();
+      b.onclick = () => seekGlobal(m.g, true, true); L.appendChild(b);
+    });
+    L.insertAdjacentHTML('beforeend', `<div class="empty">Total listening time recorded: ${fmtLong(st.listenedSeconds || 0)}</div>`);
+  } else {
+    const tr = trackAt(g);
+    B.tracks.forEach((t, i) => {
+      const b = document.createElement('button'); b.className = 'item' + (i + 1 === tr ? ' cur' : '') + (i + 1 < tr ? ' done' : '');
+      b.innerHTML = '<span class="t"></span><span class="s"></span><span class="sub"></span>';
+      b.querySelector('.t').textContent = `${String(i + 1).padStart(2, '0')}.mp3`;
+      b.querySelector('.s').textContent = fmt(t.dur);
+      b.querySelector('.sub').textContent = `${t.label} · starts ${fmt(starts[i])} · ${posLabel(starts[i])}`;
+      b.onclick = () => seekGlobal(starts[i], true, true); $('list').appendChild(b);
+    });
+    scrollToCur(L);
+  }
+}
+function scrollToCur(L) {
+  const cur = L.querySelector('.cur'); if (!cur) return;
+  const top = cur.offsetTop - L.offsetTop, bottom = top + cur.offsetHeight;
+  if (top < L.scrollTop || bottom > L.scrollTop + L.clientHeight) L.scrollTop = Math.max(0, top - 60);
+}
+function updateChapterBars(g) {
+  document.querySelectorAll('#list .item[data-i]').forEach(el => {
+    const c = chapters[+el.dataset.i]; const f = Math.max(0, Math.min(1, (g - c.g) / (c.end - c.g)));
+    el.querySelector('.pbar i').style.width = (f * 100) + '%';
+  });
+}
+let toastTimer = null;
+function toast(text, btn, fn) {
+  $('toastText').textContent = text;
+  const b = $('toastBtn'); b.style.display = btn ? '' : 'none'; b.textContent = btn || '';
+  b.onclick = () => { $('toast').classList.remove('show'); fn && fn(); };
+  $('toast').classList.add('show'); clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('toast').classList.remove('show'), btn ? 9000 : 3500);
+}
+
+// ---------- wiring ----------
+function init() {
+  $('title').textContent = B.title; $('cover').onerror = () => { $('cover').style.display = 'none'; }; $('cover').src = B.cover;
+  $('by').textContent = `${B.authors} · читает ${B.reader}`;
+  SPEEDS.forEach(s => $('speed').insertAdjacentHTML('beforeend', `<option value="${s}">${s}×</option>`));
+  // chapter ticks on the book bar
+  chapters.forEach((c, i) => { if (i) { const t = document.createElement('div'); t.className = 'tick'; t.style.left = (c.g / total * 100) + '%'; $('bookbar').appendChild(t); } });
+  $('bPlay').onclick = togglePlay;
+  $('bBack').onclick = () => skip(-15); $('bFwd').onclick = () => skip(30);
+  $('bPrev').onclick = () => chapterJump(-1); $('bNext').onclick = () => chapterJump(1);
+  $('bMark').onclick = addBookmark;
+  $('speed').onchange = e => { st.speed = +e.target.value; audio.playbackRate = st.speed; audio.defaultPlaybackRate = st.speed; updateUI(); };
+  $('sleep').onchange = e => setSleep(e.target.value);
+  $('vol').oninput = e => { audio.volume = LOUD(+e.target.value); st.volume = audio.volume; dirty = true; changed = true; };
+  $('vol').onchange = () => save('vol');
+  $('bMute').onclick = () => { audio.muted = !audio.muted; };
+  audio.addEventListener('volumechange', () => { $('bMute').textContent = audio.muted || audio.volume === 0 ? '🔇' : '🔈'; $('bMute').closest('.pill').classList.toggle('on', audio.muted); });
+  $('scrub').addEventListener('input', () => { scrubbing = true; const c = chapters[chapterAt(globalPos())]; $('tElapsed').textContent = fmt($('scrub').value / 1000 * (c.end - c.g)); });
+  $('scrub').addEventListener('change', () => { const c = chapters[chapterAt(globalPos())]; scrubbing = false; seekGlobal(c.g + $('scrub').value / 1000 * (c.end - c.g)); });
+  $('bookbar').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); seekGlobal((e.clientX - r.left) / r.width * total, undefined, true); };
+  document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t)); curTab = t.dataset.tab; renderList();
+  });
+  const themes = ['auto', 'dark', 'light'];
+  let theme = (() => { try { return localStorage.getItem('audiobook:theme') || 'auto'; } catch (e) { return 'auto'; } })();
+  const applyTheme = () => { if (theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = theme; $('bTheme').textContent = '◐ ' + theme; };
+  applyTheme();
+  $('bTheme').onclick = () => { theme = themes[(themes.indexOf(theme) + 1) % 3]; try { localStorage.setItem('audiobook:theme', theme); } catch (e) {} applyTheme(); };
+  // Hotkeys work wherever the focus is (capture phase), except while typing text.
+  const typing = el => el && (el.isContentEditable || (el.tagName === 'INPUT' && !['range', 'button', 'checkbox'].includes(el.type)) || el.tagName === 'TEXTAREA');
+  const setPos = q => { q = Math.max(0, Math.min(1, Math.round(q * 100) / 100)); audio.muted = false; audio.volume = LOUD(q); st.volume = audio.volume; dirty = true; changed = true; toast('Volume ' + Math.round(q * 100) + '%'); };
+  window.addEventListener('keydown', e => {
+    if (typing(e.target) || e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key; let handled = true;
+    if (k === ' ' || k === 'k' || k === 'K') { if (!e.repeat) togglePlay(); }
+    else if (k === 'ArrowLeft' && e.shiftKey) chapterJump(-1);
+    else if (k === 'ArrowRight' && e.shiftKey) chapterJump(1);
+    else if (k === 'ArrowLeft' || k === 'j' || k === 'J') skip(-15);
+    else if (k === 'ArrowRight' || k === 'l' || k === 'L') skip(30);
+    else if (k === 'ArrowUp') setPos(POS(audio.volume) + 0.04);
+    else if (k === 'ArrowDown') setPos(POS(audio.volume) - 0.04);
+    else if (k === '[' || k === ']') {
+      const i = SPEEDS.indexOf(st.speed), j = Math.max(0, Math.min(SPEEDS.length - 1, (i < 0 ? 8 : i) + (k === ']' ? 1 : -1)));
+      st.speed = SPEEDS[j]; $('speed').value = st.speed; audio.playbackRate = st.speed; audio.defaultPlaybackRate = st.speed; toast('Speed ' + st.speed + '×'); updateUI();
+    }
+    else if (k === 'b' || k === 'B') addBookmark();
+    else if (k === 'm' || k === 'M') { audio.muted = !audio.muted; toast(audio.muted ? 'Muted' : 'Unmuted'); }
+    else handled = false;
+    if (handled) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+  // a focused button would otherwise also be "clicked" by the Space key on keyup (double toggle)
+  window.addEventListener('keyup', e => { if (e.key === ' ' && !typing(e.target)) { e.preventDefault(); e.stopPropagation(); } }, true);
+  // don't leave buttons/sliders/menus holding keyboard focus after a mouse click
+  document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && e.detail > 0) b.blur(); });
+  document.querySelectorAll('select, input[type=range]').forEach(el => el.addEventListener('change', () => el.blur()));
+  audio.addEventListener('volumechange', () => { $('vol').value = POS(audio.volume); });
+  setInterval(() => { renderSave(); if (dirty && Date.now() - lastSave > 3000) save('dirty'); }, 1000);
+  if (SERVER) setInterval(() => fetch('/api/ping').catch(() => {}), 60000);
+}
+
+(async function main() {
+  init();
+  await loadState();
+  audio.volume = st.volume ?? 1; $('vol').value = POS(audio.volume);
+  audio.playbackRate = st.speed; audio.defaultPlaybackRate = st.speed; $('speed').value = st.speed;
+  // coming back after a while: step back a few seconds to catch the thread again
+  if (st.updated && Date.now() - st.updated > 60000) {
+    const g0 = Math.max(0, starts[st.track - 1] + st.time - 5); st.track = trackAt(g0); st.time = g0 - starts[st.track - 1];
+  }
+  // prepare the saved track without autoplay (browsers block autoplay); Space / Play resumes
+  loadTrack(st.track, st.time, false);
+  renderList(); updatePlayIcon(); updateUI();
+  const g = globalPos();
+  if (g > 1) toast(`Resume: ${posLabel(g)} — press Space or ▶`);
+  if (!B.chaptersVerified) console.warn('Chapter times are estimates');
+})();
+</script>
+</body>
+</html>

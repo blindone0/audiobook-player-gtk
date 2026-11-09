@@ -1,0 +1,18 @@
+# The recording and anything derived from the book itself is NOT part of this repository.
+audio/
+*.mp3
+*.m4b
+*.m4a
+player/cover.jpg
+player/icon.png
+VERIFICATION.md
+
+# Personal listening state and notes
+progress.json
+progress.json.*
+LOCAL-NOTES.md
+
+# Misc
+__pycache__/
+*.pyc
+*.tmp
